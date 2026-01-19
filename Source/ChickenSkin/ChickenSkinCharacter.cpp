@@ -42,8 +42,6 @@ AChickenSkinCharacter::AChickenSkinCharacter()
 	// Configure character movement
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 	GetCharacterMovement()->AirControl = 0.5f;
-	// Set walking speed (no running)
-	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 }
 
 void AChickenSkinCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -51,7 +49,10 @@ void AChickenSkinCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		
+		// Jumping
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AChickenSkinCharacter::DoJumpStart);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AChickenSkinCharacter::DoJumpEnd);
+
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AChickenSkinCharacter::MoveInput);
 
@@ -106,3 +107,14 @@ void AChickenSkinCharacter::DoMove(float Right, float Forward)
 	}
 }
 
+void AChickenSkinCharacter::DoJumpStart()
+{
+	// pass Jump to the character
+	Jump();
+}
+
+void AChickenSkinCharacter::DoJumpEnd()
+{
+	// pass StopJumping to the character
+	StopJumping();
+}
