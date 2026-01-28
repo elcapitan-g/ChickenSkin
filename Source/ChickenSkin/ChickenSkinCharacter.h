@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "Components/SpotLightComponent.h"
 #include "ChickenSkinCharacter.generated.h"
+
 
 class UInputComponent;
 class USkeletalMeshComponent;
@@ -48,6 +50,9 @@ protected:
 	/** Mouse Look Input Action */
 	UPROPERTY(EditAnywhere, Category ="Input")
 	class UInputAction* MouseLookAction;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Flashlight")
+	USpotLightComponent* Flashlight;
 	
 public:
 	AChickenSkinCharacter();
@@ -80,8 +85,11 @@ protected:
 
 	/** Set up input action bindings */
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
-	
 
+	void ToggleFlashlight();
+
+	bool bFlashlightOn;
+	
 public:
 
 	/** Returns the first person mesh **/

@@ -42,6 +42,36 @@ AChickenSkinCharacter::AChickenSkinCharacter()
 	// Configure character movement
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 	GetCharacterMovement()->AirControl = 0.5f;
+
+	// Create Flashlight
+	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
+
+// Attach to camera so it follows view
+Flashlight->SetupAttachment(FirstPersonCameraComponent); // or FollowCamera depending on your project
+
+// Position it slightly forward
+Flashlight->SetRelativeLocation(FVector(15.f, 5.f, -20.f));
+Flashlight->SetRelativeRotation(FRotator(0.f, 0.f, 0.f)); // Forward facing
+
+// Light intensity (dim, horror-friendly)
+Flashlight->Intensity = 6000.f;  // Low enough for dark ambiance
+
+// Light falloff
+Flashlight->bUseInverseSquaredFalloff = true; // natural light decay
+Flashlight->AttenuationRadius = 4000.f;       // ~40 meters reach
+
+// Cone settings (tight, focused beam)
+Flashlight->InnerConeAngle = 12.f;  // very focused center
+Flashlight->OuterConeAngle = 25.f; // soft fade at edges
+
+// Shadow and volumetrics (for eerie effects)
+Flashlight->SetCastShadows(true);
+Flashlight->ShadowBias = 0.5f;
+Flashlight->ShadowSharpen = 0.8f;
+Flashlight->VolumetricScatteringIntensity = 0.7f; // subtle fog/beam glow
+
+// Start turned off
+Flashlight->SetVisibility(false);
 }
 
 void AChickenSkinCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -64,6 +94,9 @@ void AChickenSkinCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	{
 		UE_LOG(LogChickenSkin, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
+	
+	PlayerInputComponent->BindAction("ToggleLight", IE_Pressed, this, &AChickenSkinCharacter::ToggleFlashlight);
+
 }
 
 
@@ -117,4 +150,10 @@ void AChickenSkinCharacter::DoJumpEnd()
 {
 	// pass StopJumping to the character
 	StopJumping();
+}
+
+void AChickenSkinCharacter::ToggleFlashlight()
+{
+	bFlashlightOn = !bFlashlightOn;
+	Flashlight->SetVisibility(bFlashlightOn);
 }
