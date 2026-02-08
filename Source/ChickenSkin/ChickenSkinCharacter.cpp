@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "ChickenSkinCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "TimerManager.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -72,6 +74,8 @@ Flashlight->VolumetricScatteringIntensity = 0.7f; // subtle fog/beam glow
 
 // Start turned off
 Flashlight->SetVisibility(false);
+
+PrimaryActorTick.bCanEverTick = true;
 }
 
 void AChickenSkinCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -132,19 +136,39 @@ void AChickenSkinCharacter::DoAim(float Yaw, float Pitch)
 
 void AChickenSkinCharacter::DoMove(float Right, float Forward)
 {
-	if (GetController())
+	if (!GetController())
+		return;
+
+	AddMovementInput(GetActorRightVector(), Right);
+	AddMovementInput(GetActorForwardVector(), Forward);
+
+	const FVector Velocity = GetVelocity();
+	const float Speed = Velocity.Size2D();
+
+	if (Speed > 5.f)
 	{
-		// pass the move inputs
-		AddMovementInput(GetActorRightVector(), Right);
-		AddMovementInput(GetActorForwardVector(), Forward);
+		if (!GetWorldTimerManager().IsTimerActive(FootstepTimer))
+		{
+			StartFootsteps();
+		}
+	}
+	else
+	{
+		StopFootsteps();
 	}
 }
 
+
 void AChickenSkinCharacter::DoJumpStart()
 {
-	// pass Jump to the character
+	if (bFootstepsActive)
+	{
+		StopFootsteps();
+		bFootstepsActive = false;
+	}
 	Jump();
 }
+
 
 void AChickenSkinCharacter::DoJumpEnd()
 {
@@ -152,8 +176,76 @@ void AChickenSkinCharacter::DoJumpEnd()
 	StopJumping();
 }
 
+
 void AChickenSkinCharacter::ToggleFlashlight()
 {
 	bFlashlightOn = !bFlashlightOn;
 	Flashlight->SetVisibility(bFlashlightOn);
 }
+void AChickenSkinCharacter::PlayFootstep()
+{
+	if (FootstepSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			FootstepSound,
+			GetActorLocation()
+		);
+	}
+}
+void AChickenSkinCharacter::StartFootsteps()
+{
+	//Play immediately so there is no delay
+	PlayFootstep();
+
+	GetWorldTimerManager().SetTimer(
+		FootstepTimer,
+		this,
+		&AChickenSkinCharacter::PlayFootstep,
+		FootstepInterval,
+		true
+	);
+}
+
+void AChickenSkinCharacter::StopFootsteps()
+{
+	GetWorldTimerManager().ClearTimer(FootstepTimer);
+}
+
+void AChickenSkinCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	const float Speed = GetVelocity().Size2D();
+	const bool bIsMoving = Speed > 5.f;
+
+	const UCharacterMovementComponent* MoveComp = GetCharacterMovement();
+	const bool bOnGround = MoveComp->IsMovingOnGround();
+
+	if (bIsMoving && bOnGround)
+	{
+		if (!bFootstepsActive)
+		{
+			StartFootsteps();
+			bFootstepsActive = true;
+		}
+	}
+	else
+	{
+		if (bFootstepsActive)
+		{
+			StopFootsteps();
+			bFootstepsActive = false;
+		}
+	}
+}
+
+void AChickenSkinCharacter::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+	StopFootsteps();
+}
+
+
+
+

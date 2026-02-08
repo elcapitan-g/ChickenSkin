@@ -53,6 +53,19 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Flashlight")
 	USpotLightComponent* Flashlight;
+
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	USoundBase* FootstepSound;
+
+	FTimerHandle FootstepTimer;
+
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	float FootstepInterval = 0.45f;
+
+	void PlayFootstep();
+	void StartFootsteps();
+	void StopFootsteps();
+
 	
 public:
 	AChickenSkinCharacter();
@@ -89,6 +102,12 @@ protected:
 	void ToggleFlashlight();
 
 	bool bFlashlightOn;
+	
+	bool bFootstepsActive = false;
+
+	virtual void Tick(float DeltaTime) override;
+
+	virtual void Landed(const FHitResult& Hit) override;
 	
 public:
 
