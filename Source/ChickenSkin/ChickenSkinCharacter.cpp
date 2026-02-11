@@ -181,15 +181,45 @@ void AChickenSkinCharacter::ToggleFlashlight()
 {
 	bFlashlightOn = !bFlashlightOn;
 	Flashlight->SetVisibility(bFlashlightOn);
+
+	if (bFlashlightOn)
+	{
+		if (FlashlightOnSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(
+				this,
+				FlashlightOnSound,
+				GetActorLocation(),
+				FlashlightVolume
+			);
+		}
+	}
+	else
+	{
+		if (FlashlightOffSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(
+				this,
+				FlashlightOffSound,
+				GetActorLocation(),
+				FlashlightVolume
+			);
+		}
+	}
 }
+
 void AChickenSkinCharacter::PlayFootstep()
 {
+	float Pitch = FMath::RandRange(0.95f, 1.05f);
+
 	if (FootstepSound)
 	{
 		UGameplayStatics::PlaySoundAtLocation(
 			this,
 			FootstepSound,
-			GetActorLocation()
+			GetActorLocation(),
+			FootstepVolume,
+			Pitch
 		);
 	}
 }

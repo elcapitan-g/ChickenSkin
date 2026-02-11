@@ -62,6 +62,18 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Audio")
 	float FootstepInterval = 0.45f;
 
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	USoundBase* FlashlightOnSound;
+
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	USoundBase* FlashlightOffSound;
+
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	float FootstepVolume = 0.6f;
+
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	float FlashlightVolume = 0.5f;
+
 	void PlayFootstep();
 	void StartFootsteps();
 	void StopFootsteps();
