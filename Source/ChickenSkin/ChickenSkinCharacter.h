@@ -60,7 +60,7 @@ protected:
 	FTimerHandle FootstepTimer;
 
 	UPROPERTY(EditAnywhere, Category = "Audio")
-	float FootstepInterval = 0.45f;
+	float FootstepInterval = 0.35f;
 
 	UPROPERTY(EditAnywhere, Category = "Audio")
 	USoundBase* FlashlightOnSound;
@@ -69,10 +69,10 @@ protected:
 	USoundBase* FlashlightOffSound;
 
 	UPROPERTY(EditAnywhere, Category = "Audio")
-	float FootstepVolume = 0.6f;
+	float FootstepVolume = 0.4f;
 
 	UPROPERTY(EditAnywhere, Category = "Audio")
-	float FlashlightVolume = 0.5f;
+	float FlashlightVolume = 0.4f;
 
 	void PlayFootstep();
 	void StartFootsteps();
