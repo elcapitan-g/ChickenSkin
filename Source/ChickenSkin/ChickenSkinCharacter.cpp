@@ -56,11 +56,11 @@ Flashlight->SetRelativeLocation(FVector(15.f, 5.f, -20.f));
 Flashlight->SetRelativeRotation(FRotator(0.f, 0.f, 0.f)); // Forward facing
 
 // Light intensity (dim, horror-friendly)
-Flashlight->Intensity = 6000.f;  // Low enough for dark ambiance
+Flashlight->Intensity = 9000.f;  // Low enough for dark ambiance
 
 // Light falloff
 Flashlight->bUseInverseSquaredFalloff = true; // natural light decay
-Flashlight->AttenuationRadius = 4000.f;       // ~40 meters reach
+Flashlight->AttenuationRadius = 8000.f;       // ~80 meters reach
 
 // Cone settings (tight, focused beam)
 Flashlight->InnerConeAngle = 12.f;  // very focused center
